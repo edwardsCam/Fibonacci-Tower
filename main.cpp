@@ -7,8 +7,8 @@
 #define WIDTH 1200
 #define HEIGHT 600
 #define phi ((sqrt(5) + 1)/2)
-#define mlen (minF(WIDTH, HEIGHT) - 100.0)
-#define max_level 7
+#define mlen (min(WIDTH, HEIGHT) - 100.0)
+#define max_level 20
 
 sf::RenderWindow window;
 
@@ -21,30 +21,20 @@ void makeSquare(float x, float y, float len) {
 	window.display();
 }
 
-float minF(float a, float b) {
-	if (a <= b) return a;
-	return b;
-}
-
 void draw(int l, float x, float y) {
 
 	if (l > max_level)
 		return;
 
-	bool odd = l % 2 == 1;
-
-	float len = mlen / (pow(phi, l));
-
-	float nextx = x+len;
-	float nexty = y;
-	if (odd) {
+	float len = 1.4 * mlen / pow(phi, l);
+	float nexty;
+	if (l % 2)
 		nexty = y;
-	} else {
-		nexty = y + len - (len / phi);
-	}
+	else
+		nexty = y + len - len / phi;
 
 	makeSquare(x, y, len);
-	draw(++l, nextx, nexty);
+	draw(++l, x+len, nexty);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
