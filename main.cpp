@@ -31,10 +31,20 @@ void draw(int l, float x, float y) {
 	if (l > max_level)
 		return;
 
+	bool odd = l % 2 == 1;
+
 	float len = mlen / (pow(phi, l));
 
+	float nextx = x+len;
+	float nexty = y;
+	if (odd) {
+		nexty = y;
+	} else {
+		nexty = y + len - (len / phi);
+	}
+
 	makeSquare(x, y, len);
-	draw(++l, x+len, y);
+	draw(++l, nextx, nexty);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
