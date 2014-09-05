@@ -9,7 +9,7 @@
 #define HEIGHT 600.0
 #define phi ((sqrt(5) + 1)/2)
 #define mlen (min(WIDTH, HEIGHT) - 100.0)
-#define max_level 10
+#define max_level 12
 
 sf::RenderWindow window;
 std::vector<sf::RectangleShape *> boxes;
@@ -48,10 +48,11 @@ bool inBounds() {
 bool isHoveringOverBox(sf::RectangleShape * b) {
 	sf::Vector2i mouse = sf::Mouse::getPosition(window);
 	sf::Vector2f p = b->getPosition();
-	return (mouse.x >= p.x && mouse.x <= p.x + b->getSize().x);
+	return (mouse.x >= p.x && mouse.x <= p.x + b->getSize().x && mouse.y >= p.y && mouse.y <= p.y + b->getSize().y);
 }
 
 void colorBoxes(sf::RectangleShape * curr) {
+	window.clear(sf::Color::Cyan);
 	bool hit = false;
 	int s = boxes.size();
 	int n = 0;
@@ -86,6 +87,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			for (int i = 0; i < boxes.size(); i++) {
 				if (isHoveringOverBox(boxes[i])) {
 					curr = boxes[i];
+					if (i > 0) {
+						bool first = true;
+						int init = 0;
+						int diff = 0;
+						int mouse = 0;
+						int pos = 0;
+						while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+							pos = curr->getPosition().y;
+							mouse = sf::Mouse::getPosition(window).y;
+							int boundl = boxes[i-1]->getPosition().y;
+							int boundh = boxes[i-1]->getPosition().y + boxes[i-1]->getSize().y - curr->getSize().y;
+							if (first) {
+								init = mouse;
+								diff = init - pos;
+								first = false;
+							}
+							int newy = mouse-diff;
+							if (newy > boundl && newy < boundh) {
+								curr->setPosition(curr->getPosition().x, newy);
+								for (int j = i+1; j < boxes.size(); j++) {
+									sf::Vector2f np = boxes[j]->getPosition();
+									boxes[j]->setPosition(np.x, np.y + newy - pos);
+								}
+							}
+							colorBoxes(curr);
+						}
+					}
 				}
 			}
 		} else curr = 0;
