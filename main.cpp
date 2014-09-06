@@ -89,27 +89,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					curr = boxes[i];
 					if (i > 0) {
 						bool first = true;
-						int init = 0;
 						int diff = 0;
-						int mouse = 0;
-						int pos = 0;
 						while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-							pos = curr->getPosition().y;
-							mouse = sf::Mouse::getPosition(window).y;
-							int boundl = boxes[i-1]->getPosition().y;
-							int boundh = boxes[i-1]->getPosition().y + boxes[i-1]->getSize().y - curr->getSize().y;
+							int currpos = curr->getPosition().y;
+							int mousepos = sf::Mouse::getPosition(window).y;
+							int boundlo = boxes[i-1]->getPosition().y;
+							int boundhi = boxes[i-1]->getPosition().y + boxes[i-1]->getSize().y - curr->getSize().y;
 							if (first) {
-								init = mouse;
-								diff = init - pos;
+								diff = mousepos - currpos;
 								first = false;
 							}
-							int newy = mouse-diff;
-							if (newy > boundl && newy < boundh) {
-								curr->setPosition(curr->getPosition().x, newy);
-								for (int j = i+1; j < boxes.size(); j++) {
-									sf::Vector2f np = boxes[j]->getPosition();
-									boxes[j]->setPosition(np.x, np.y + newy - pos);
-								}
+
+							int newy = mousepos - diff;
+							if (newy < boundlo) 
+								newy = boundlo;
+							else if (newy > boundhi)
+								newy = boundhi;
+
+							curr->setPosition(curr->getPosition().x, newy);
+							for (int j = i+1; j < boxes.size(); j++) {
+								sf::Vector2f np = boxes[j]->getPosition();
+								boxes[j]->setPosition(np.x, np.y + newy - currpos);
 							}
 							colorBoxes(curr);
 						}
